@@ -9,7 +9,7 @@ const store = useTodoStore()
 const isInitialLoad = ref(true)
 
 const filterMessages = {
-  all: { message: '暂无任务', hint: '点击上方「+ 新任务」或按 ^N 开始添加' },
+  all: { message: '暂无任务', hint: '点击上方「+」按钮开始添加任务吧' },
   active: { message: '没有进行中的任务', hint: '任务全部搞定，干得漂亮' },
   completed: { message: '没有已完成的任务', hint: '完成任务后将显示在这里' },
   favorites: { message: '没有收藏的任务', hint: '点击任务右侧的星标即可收藏' },
@@ -17,7 +17,6 @@ const filterMessages = {
 }
 
 onMounted(() => {
-  // 模拟首次加载
   setTimeout(() => {
     isInitialLoad.value = false
   }, 600)
@@ -25,10 +24,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- 骨架屏 -->
   <SkeletonLoader v-if="isInitialLoad" :count="5" />
 
-  <!-- 列表 -->
   <div v-else-if="store.filteredTasks.length > 0" class="flex flex-col gap-2">
     <TransitionGroup name="fade">
       <TaskItem
@@ -39,7 +36,6 @@ onMounted(() => {
     </TransitionGroup>
   </div>
 
-  <!-- 空状态 -->
   <EmptyState
     v-else
     :message="filterMessages[store.filter].message"

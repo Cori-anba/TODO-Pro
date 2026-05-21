@@ -1,7 +1,7 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 import { useTodoStore } from '@/stores/todoStore'
-import { Star, Pencil, Trash2, Clock, Bell, BellOff } from 'lucide-vue-next'
+import { Star, Pencil, Trash2, Clock, BellOff } from 'lucide-vue-next'
 import dayjs from 'dayjs'
 
 const props = defineProps({
@@ -74,7 +74,7 @@ function toggleReminderPicker() {
 
 <template>
   <div
-    class="group flex items-center gap-3 px-4 py-3 bg-card rounded-card border transition-all duration-150"
+    class="group flex items-start gap-2.5 md:gap-3 px-3 md:px-4 py-3 bg-card rounded-card border transition-all duration-150"
     :class="{
       'opacity-50': task.completed,
       'border-overdue-border bg-overdue-bg': isOverdue(),
@@ -84,7 +84,7 @@ function toggleReminderPicker() {
     <!-- 复选框 -->
     <button
       @click="store.toggleComplete(task.id)"
-      class="w-[18px] h-[18px] flex-shrink-0 rounded-[5px] border-2 flex items-center justify-center transition-all duration-150"
+      class="w-[20px] h-[20px] md:w-[18px] md:h-[18px] mt-0.5 flex-shrink-0 rounded-[5px] border-2 flex items-center justify-center transition-all duration-150"
       :class="task.completed
         ? 'bg-[#40c057] border-[#40c057] dark:bg-[#51cf66] dark:border-[#51cf66]'
         : 'border-text-tertiary/40 hover:border-text-secondary/60'"
@@ -95,8 +95,8 @@ function toggleReminderPicker() {
     </button>
 
     <!-- 主内容区 -->
-    <div class="flex-1 min-w-0 flex items-center gap-3">
-      <div class="flex-1 min-w-0" @dblclick="startEdit">
+    <div class="flex-1 min-w-0">
+      <div @dblclick="startEdit">
         <input
           v-if="isEditing"
           ref="editInput"
@@ -107,12 +107,13 @@ function toggleReminderPicker() {
         />
         <span
           v-else
-          class="text-[14px] cursor-default select-none transition-colors duration-150"
+          class="text-[14px] leading-snug cursor-default select-none transition-colors duration-150 break-words"
           :class="task.completed ? 'line-through text-text-tertiary' : 'text-text-primary'"
         >{{ task.title }}</span>
       </div>
 
-      <div class="flex items-center gap-2 flex-shrink-0">
+      <!-- 元信息行 -->
+      <div class="flex items-center gap-2 mt-1.5 flex-wrap">
         <span
           class="text-[10px] font-semibold px-2 py-0.5 rounded-tag leading-none transition-colors duration-300"
           :class="priorityMap[task.priority].class"
@@ -127,35 +128,39 @@ function toggleReminderPicker() {
           {{ dayjs(task.reminder).format('MM-DD HH:mm') }}
         </span>
 
-        <span class="text-[11px] text-text-tertiary font-mono whitespace-nowrap hidden sm:inline">
+        <span class="text-[11px] text-text-tertiary font-mono whitespace-nowrap">
           {{ dayjs(task.createdAt).format('MM-DD') }}
         </span>
       </div>
     </div>
 
-    <!-- 操作按钮 -->
-    <div class="flex items-center gap-0.5 flex-shrink-0">
+    <!-- 操作按钮 — 桌面端 hover 可见，移动端始终可见 -->
+    <div
+      class="flex items-center gap-0.5 flex-shrink-0
+             md:opacity-0 md:group-hover:opacity-100 transition-all duration-150"
+    >
       <button
         @click="store.toggleFavorite(task.id)"
-        class="w-7 h-7 flex items-center justify-center rounded-md transition-all duration-150"
+        class="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-md transition-all duration-150"
         :class="task.favorite
           ? 'text-[#f08c00]'
-          : 'text-text-tertiary/50 hover:text-[#f08c00] opacity-0 group-hover:opacity-100'"
+          : 'text-text-tertiary/50 hover:text-[#f08c00]'"
         :title="task.favorite ? '取消收藏' : '收藏'"
       >
-        <Star :size="15" :fill="task.favorite ? 'currentColor' : 'none'" />
+        <Star :size="16" class="md:w-[15px] md:h-[15px]" :fill="task.favorite ? 'currentColor' : 'none'" />
       </button>
 
+      <!-- 提醒 -->
       <div class="relative">
         <button
           @click="toggleReminderPicker"
-          class="w-7 h-7 flex items-center justify-center rounded-md transition-all duration-150"
+          class="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-md transition-all duration-150"
           :class="task.reminder
             ? 'text-[#f08c00]'
-            : 'text-text-tertiary/50 hover:text-text-secondary opacity-0 group-hover:opacity-100'"
+            : 'text-text-tertiary/50 hover:text-text-secondary'"
           title="设置提醒"
         >
-          <Clock :size="15" />
+          <Clock :size="16" class="md:w-[15px] md:h-[15px]" />
         </button>
         <Transition name="fade">
           <div v-if="showReminderPicker" class="absolute right-0 top-full mt-1 z-20 bg-card rounded-card shadow-modal
@@ -163,17 +168,17 @@ function toggleReminderPicker() {
             <input
               v-model="reminderValue"
               type="datetime-local"
-              class="px-2 py-1.5 text-[12px] bg-input-bg border border-border rounded-btn outline-none text-text-primary"
+              class="w-[160px] px-2 py-1.5 text-[12px] bg-input-bg border border-border rounded-btn outline-none text-text-primary"
               @keydown.enter="handleSetReminder"
             />
             <button
               @click="handleSetReminder"
-              class="px-3 py-1.5 text-[11px] font-semibold bg-[#2c2c2c] text-white dark:bg-[#e8e5e0] dark:text-[#111110] rounded-btn hover:opacity-90 transition-opacity"
+              class="px-3 py-1.5 text-[11px] font-semibold bg-[#2c2c2c] text-white dark:bg-[#e8e5e0] dark:text-[#111110] rounded-btn hover:opacity-90 transition-opacity whitespace-nowrap"
             >确定</button>
             <button
               v-if="task.reminder"
               @click="clearReminder"
-              class="px-3 py-1.5 text-[11px] font-semibold text-tag-high-text hover:bg-tag-high-bg rounded-btn transition-colors"
+              class="px-2.5 py-1.5 text-[11px] font-semibold text-tag-high-text hover:bg-tag-high-bg rounded-btn transition-colors whitespace-nowrap"
             >清除</button>
           </div>
         </Transition>
@@ -181,20 +186,20 @@ function toggleReminderPicker() {
 
       <button
         @click="startEdit"
-        class="w-7 h-7 flex items-center justify-center rounded-md text-text-tertiary/50
-               hover:text-text-secondary opacity-0 group-hover:opacity-100 transition-all duration-150"
+        class="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-md text-text-tertiary/50
+               hover:text-text-secondary transition-all duration-150"
         title="编辑"
       >
-        <Pencil :size="14" />
+        <Pencil :size="15" class="md:w-[14px] md:h-[14px]" />
       </button>
 
       <button
         @click="store.deleteTask(task.id)"
-        class="w-7 h-7 flex items-center justify-center rounded-md text-text-tertiary/50
-               hover:text-tag-high-text opacity-0 group-hover:opacity-100 transition-all duration-150"
+        class="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-md text-text-tertiary/50
+               hover:text-tag-high-text transition-all duration-150"
         title="删除"
       >
-        <Trash2 :size="14" />
+        <Trash2 :size="15" class="md:w-[14px] md:h-[14px]" />
       </button>
     </div>
   </div>

@@ -162,13 +162,25 @@ export const useTodoStore = defineStore('todo', () => {
   function seedDemoData() {
     if (tasks.value.length > 0) return
     const now = dayjs()
+    // 动态日期：基于用户首次访问的当前时间计算截止时间
     const demos = [
-      { title: '完成产品需求文档', priority: 'high', favorite: true, reminder: now.add(2, 'hour').toISOString() },
-      { title: '设计登录页面原型', priority: 'mid', favorite: true },
-      { title: '代码审查并合并 PR', priority: 'high', reminder: now.subtract(1, 'day').toISOString() },
-      { title: '更新项目 README 文档', priority: 'low' },
-      { title: '修复移动端导航栏布局问题', priority: 'mid', reminder: now.add(30, 'minute').toISOString() },
-      { title: '准备本周技术分享 PPT', priority: 'low', favorite: true, reminder: now.add(3, 'day').toISOString() },
+      {
+        title: '提前准备线上面试的环境和资料',
+        priority: 'high',
+        favorite: true,
+        reminder: now.add(1, 'day').hour(9).minute(0).second(0).toISOString(),
+      },
+      {
+        title: '完成报告分享的 PPT',
+        priority: 'mid',
+        favorite: true,
+        reminder: now.add(3, 'day').hour(18).minute(0).second(0).toISOString(),
+      },
+      {
+        title: '把数学第三章的视频课程看完，并完成配套练习',
+        priority: 'mid',
+        reminder: now.add(7, 'day').hour(20).minute(0).second(0).toISOString(),
+      },
     ]
     demos.forEach(d => addTask(d))
   }

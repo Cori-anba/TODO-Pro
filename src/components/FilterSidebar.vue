@@ -1,8 +1,11 @@
 <script setup>
+import { inject } from 'vue'
 import { useTodoStore } from '@/stores/todoStore'
-import { ListTodo, Circle, CheckCircle2, Star, AlertCircle, ArrowDownUp } from 'lucide-vue-next'
+import { ListTodo, Circle, CheckCircle2, Star, AlertCircle, ArrowDownUp, X } from 'lucide-vue-next'
 
 const store = useTodoStore()
+const toggleSidebar = inject('toggleSidebar')
+const isSidebarOpen = inject('isSidebarOpen')
 
 const filters = [
   { key: 'all', label: '全部任务', icon: ListTodo },
@@ -14,20 +17,36 @@ const filters = [
 </script>
 
 <template>
-  <aside class="w-[200px] flex-shrink-0 bg-card border-r border-border flex flex-col h-full transition-colors duration-300">
-    <div class="flex-1 p-4">
+  <aside
+    class="fixed md:static inset-y-0 left-0 z-40 w-[220px] md:w-[200px] flex-shrink-0 bg-card border-r border-border
+           flex flex-col transition-all duration-300
+           md:translate-x-0"
+    :class="isSidebarOpen ? 'translate-x-0 shadow-modal md:shadow-none' : '-translate-x-full md:translate-x-0'"
+  >
+    <!-- 移动端标题栏 -->
+    <div class="flex items-center justify-between p-4 border-b border-border md:hidden">
+      <span class="font-display text-[16px] italic text-text-primary">TODO<span class="not-italic font-sans text-[11px] text-text-tertiary ml-1">菜单</span></span>
+      <button
+        @click="toggleSidebar()"
+        class="w-8 h-8 flex items-center justify-center rounded-btn hover:bg-hover-bg transition-colors text-text-secondary"
+      >
+        <X :size="18" />
+      </button>
+    </div>
+
+    <div class="flex-1 p-4 overflow-y-auto">
       <p class="text-[10px] font-bold text-text-tertiary uppercase tracking-wider px-2 mb-3 select-none">视图</p>
       <nav class="flex flex-col gap-0.5">
         <button
           v-for="f in filters"
           :key="f.key"
           @click="store.filter = f.key"
-          class="flex items-center gap-2.5 px-2.5 py-2 rounded-btn text-[13px] transition-all duration-150 w-full text-left"
+          class="flex items-center gap-2.5 px-2.5 py-2.5 md:py-2 rounded-btn text-[14px] md:text-[13px] transition-all duration-150 w-full text-left"
           :class="store.filter === f.key
             ? 'bg-[#2c2c2c] dark:bg-[#e8e5e0] text-white dark:text-[#111110] font-medium'
             : 'text-text-primary hover:bg-hover-bg'"
         >
-          <component :is="f.icon" :size="15" />
+          <component :is="f.icon" :size="16" class="md:w-[15px] md:h-[15px]" />
           <span class="flex-1">{{ f.label }}</span>
           <span
             class="text-[11px] tabular-nums min-w-[18px] text-center"
@@ -40,7 +59,7 @@ const filters = [
       <div class="relative">
         <select
           v-model="store.sortBy"
-          class="w-full appearance-none pl-2.5 pr-8 py-2 text-[12px] bg-hover-bg border-none rounded-btn
+          class="w-full appearance-none pl-2.5 pr-8 py-2.5 md:py-2 text-[13px] md:text-[12px] bg-hover-bg border-none rounded-btn
                  outline-none cursor-pointer text-text-primary transition-colors duration-150 hover:brightness-95"
         >
           <option value="created">创建时间</option>
