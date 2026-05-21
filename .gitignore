@@ -1,0 +1,32 @@
+# 构建产物
+dist/
+dist-ssr/
+
+# 依赖
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 日志
+*.log
+npm-debug.log*
+
+# 调试
+.superpowers/
+
+# 编辑器本地配置
+*.code-workspace
