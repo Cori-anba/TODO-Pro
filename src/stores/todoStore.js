@@ -65,14 +65,23 @@ export const useTodoStore = defineStore('todo', () => {
       result = result.filter(t => t.title.toLowerCase().includes(q))
     }
 
-    // 排序 — 收藏置顶
+    // 排序 — 已完成任务沉底，未完成任务按选定方式排列
     result.sort((a, b) => {
-      if (a.favorite !== b.favorite) return a.favorite ? -1 : 1
-      if (sortBy.value === 'priority') {
-        const order = { high: 0, mid: 1, low: 2 }
-        return order[a.priority] - order[b.priority]
+      // 已完成的任务永远排在最下面
+      if (a.completed !== b.completed) return a.completed ? 1 : -1
+
+      // 未完成任务：收藏置顶 → 按排序方式
+      if (!a.completed) {
+        if (a.favorite !== b.favorite) return a.favorite ? -1 : 1
+        if (sortBy.value === 'priority') {
+          const order = { high: 0, mid: 1, low: 2 }
+          return order[a.priority] - order[b.priority]
+        }
+        return dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf()
       }
-      return dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf()
+
+      // 已完成任务：按完成时间倒序（最近勾选的排在上面）
+      return dayjs(b.updatedAt).valueOf() - dayjs(a.updatedAt).valueOf()
     })
 
     return result

@@ -123,6 +123,11 @@
     transform: translateY(-4px);
   }
 
+  /* FLIP 移动动画 —— 打勾沉底 / 取消打勾归位 */
+  .fade-move {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .toast-enter-active {
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
